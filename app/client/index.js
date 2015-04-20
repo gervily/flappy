@@ -194,7 +194,9 @@ function buttonOk(){
       //console.log('>> start');
       gameController.show(startView);
       //phase = 'start';
-      Timer.after(function(){phase ='start'; transOut();},5);
+      //transOut();
+      sinusDisp.set(-50, {duration : 350, curve: Easing.outQuad}, function(){transIn();});
+      Timer.after(function(){phase ='start';},5);
       break;
     case 'lose':
       // Anem a start. Posar condicions inicials
