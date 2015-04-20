@@ -1,5 +1,5 @@
 // Variables importants
-/// LEGIT XDDDD
+/// LEGIT XDDDD :(:())
 var MeteorSurface = require('library/meteor/core/Surface');
 
 var phase;
