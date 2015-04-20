@@ -2,6 +2,7 @@
 var MeteorSurface = require('library/meteor/core/Surface');
 
 var phase;
+var sinCoef = 0;
 
 var mainContext;
 var qq;
@@ -12,11 +13,10 @@ var scoreRanking = [];
 var posicio;
 
 
-  var spaceMin = 52;
-  var spaceHeight = 250;
-  var heightFloor = 205;
-  var colWidth = 113;
-
+var spaceMin = 52;
+var spaceHeight = 250;
+var heightFloor = 205;
+var colWidth = 113;
 
 var gameHeight;
 var gameController;
@@ -164,7 +164,8 @@ function setScore(number){
 function buttonOk(){
   switch (phase){
     case 'startScore':
-      // Anem a start. Posar condicions inicials
+      // Anem a start. Posar condicions inicialsi
+      sinus=true;
       aux = [0,0];
       scoreSurfaceModifier[0].setTransform(Transform.translate(320,50,100));
       scoreSurfaceModifier[1].setOpacity(0);
@@ -179,6 +180,7 @@ function buttonOk(){
       break;
     case 'loseScore':
       // Anem a start. Posar condicions inicials
+      sinus = true;
       physicsEngine.detach(gravityId);
       birdParticle.setVelocity([0,0,0]);
       setColPosition();
@@ -192,13 +194,14 @@ function buttonOk(){
       //console.log('>> start');
       gameController.show(startView);
       //phase = 'start';
-      Timer.after(function(){phase ='start';},5);
+      Timer.after(function(){phase ='start'; transOut();},5);
       break;
     case 'lose':
       // Anem a start. Posar condicions inicials
       physicsEngine.detach(gravityId);
       birdParticle.setVelocity([0,0,0]);
       setColPosition();
+      sinus = true;
       aux = [0,0];
       scoreSurfaceModifier[0].setTransform(Transform.translate(320,50,100));
       scoreSurfaceModifier[1].setOpacity(0);
@@ -209,6 +212,8 @@ function buttonOk(){
       //console.log('>> start');
       gameController.show(startView);
       //phase = 'start';
+      //transOut();
+      sinusDisp.set(-50, {duration : 350, curve: Easing.outQuad}, function(){transIn();});
       Timer.after(function(){phase ='start';},5);
       break;
   }
@@ -230,6 +235,11 @@ function action(){
 
 function startToGame(){
   //console.log('startToGame');
+  var disp = sinusDisp.get();
+  sinus = false;
+  //birdParticle.setPosition(birdParticleInitialPosition - [0,disp,0]);
+  sinusDisp.halt();
+  sinusDisp.set(0);
   setColPosition();
   numCol = 0;
   //console.log('>> game');
@@ -248,7 +258,7 @@ function startToGame(){
 function press1(){
   //Timer.clear(repeat);
   //console.log('_______________________');
-  //console.log('Frames with collision: ' + erasethis);
+  //console.log('Frames with fcoll: ' + erasethis);
   //console.log('Bird actual position: [' + birdParticle.position.x+ ',' + birdParticle.position.y + ']');
   
   //for ( var i = 0; i < numCols; i++ ){
@@ -297,6 +307,21 @@ function Lose(){
   
 }
 
+var sinusDisp;
+var sinus = true;
+
+function transIn (){
+  if (sinus){
+    sinusDisp.set(50, {duration : 700, curve: Easing.inOutQuad}, function(){transOut();});
+  }
+}
+
+function transOut (){
+  if (sinus){
+    sinusDisp.set(-50, {duration : 700, curve: Easing.inOutQuad }, function(){transIn();});
+  }
+}
+
 function buttonScoreOk(){
   // Estem a scoreView i donem OK --> Anem a startView
 }
@@ -317,7 +342,7 @@ function buttonScore(){
 }
 
 function collisionFunction(){
-  
+    
   if (phase == 'game'){
   
     for (var i = 0; i < numCols; i++ ){
@@ -409,8 +434,9 @@ function setColPosition(){
 
 // Main
 Meteor.startup(function(){
-  
-
+  sinusDisp = new Transitionable(0);
+  //transOut();
+  sinusDisp.set(-50, {duration : 350, curve: Easing.outQuad}, function(){transIn();});
   //console.log(( (960-heightFloor-spaceMin-(spaceHeight/2)) - (spaceMin+(spaceHeight/2)) ));
   // Col Queue
   colQueue = new Queue();
@@ -684,8 +710,11 @@ Meteor.startup(function(){
   bird1Surface = new ImageSurface({
     content: 'img/birdie_1.png'
   });
-  bird1SurfaceModifier = new StateModifier({
-    opacity: 1
+  bird1SurfaceModifier = new Modifier({
+    opacity: 1,
+    transform: function(){
+      return Transform.translate(0,sinusDisp.get(),0);
+    }
   });  
   bird2Surface = new ImageSurface({
     content: 'img/birdie_2.png'
