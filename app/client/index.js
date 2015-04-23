@@ -332,6 +332,11 @@ function buttonScore(){
   // Hem apretat el botó 'Score' desde ( loseView OR startView )
   //console.log('Has fet ' + score + ' punts (top ' + posicio + ')!');
   //console.log(phase);
+  
+  scoreViewButton1.setContent('img/scoreHead11.jpg');
+  scoreViewButton2.setContent('img/scoreHead20.jpg');
+  scoreViewButton3.setContent('img/scoreHead30.jpg');
+  
   gameController.show(scoreView);
   switch (phase){
     case 'lose':
@@ -540,42 +545,42 @@ Meteor.startup(function(){
   
   // scoreView Surfaces and stuphph
   
-  scoreViewButton1 =     new Surface({
-    content: 'button1',
+  scoreViewButton1 =     new ImageSurface({
+    content: 'img/scoreHead11.jpg',
     properties: {backgroundColor: 'grey'}
   });
-  scoreViewButton2 =     new Surface({
-    content: 'button2',
+  scoreViewButton2 =     new ImageSurface({
+    content: 'img/scoreHead20.jpg',
     properties: {backgroundColor: 'yellow'}
   });
-  scoreViewButton3 =     new Surface({
-    content: 'button3',
+  scoreViewButton3 =     new ImageSurface({
+    content: 'img/scoreHead30.jpg',
     properties: {backgroundColor: 'black'}
   });
-  scoreViewSurface =     new Surface({
-    content: 'Surface',
+  scoreViewSurface =     new ImageSurface({
+    content: 'img/scoreInfoBody.jpg',
     properties: {backgroundColor: 'green'}
   });
-  scoreViewButtonOk =    new Surface({
-    content: 'buttonOk',
+  scoreViewButtonOk =    new ImageSurface({
+    content: 'img/btn_ok.png',
     properties: {backgroundColor: 'red'}
   });
   
   scoreViewButton1Modifier =     new StateModifier({
-    size: [186,65],
+    size: [187,73],
     transform:  Transform.translate(41,240,100)
   });
   scoreViewButton2Modifier =     new StateModifier({
-    size: [186,65],
+    size: [186,73],
     transform:  Transform.translate(227,240,100)
   });
   scoreViewButton3Modifier =     new StateModifier({
-    size: [186,65],
+    size: [186,73],
     transform:  Transform.translate(413,240,100)
   });
   scoreViewSurfaceModifier =     new StateModifier({
-    size: [558,415],
-    transform:  Transform.translate(41,305,100)
+    size: [558,407],
+    transform:  Transform.translate(41,313,100)
   });
   scoreViewButtonOkModifier =    new StateModifier({
     size: [186,65],
@@ -829,6 +834,21 @@ Meteor.startup(function(){
   //Timer.setInterval(callback,tick);
   
   // EVENTS
+  scoreViewButton1.on('click', function(){
+    scoreViewButton1.setContent('img/scoreHead11.jpg');
+    scoreViewButton2.setContent('img/scoreHead20.jpg');
+    scoreViewButton3.setContent('img/scoreHead30.jpg');
+  });
+  scoreViewButton2.on('click', function(){
+    scoreViewButton1.setContent('img/scoreHead10.jpg');
+    scoreViewButton2.setContent('img/scoreHead21.jpg');
+    scoreViewButton3.setContent('img/scoreHead30.jpg');
+  });
+  scoreViewButton3.on('click', function(){
+    scoreViewButton1.setContent('img/scoreHead10.jpg');
+    scoreViewButton2.setContent('img/scoreHead20.jpg');
+    scoreViewButton3.setContent('img/scoreHead31.jpg');
+  });
   
   scoreViewButtonOk.on('click',function(){
     buttonOk();
