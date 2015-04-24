@@ -860,35 +860,35 @@ Meteor.startup(function(){
   //Timer.setInterval(callback,tick);
   
   // EVENTS
-  scoreViewButton1.on('click', function(){
+  scoreViewButton1.on('mousedown', function(){
     scoreViewButton1.setContent('img/scoreHead11.jpg');
     scoreViewButton2.setContent('img/scoreHead20.jpg');
     scoreViewButton3.setContent('img/scoreHead30.jpg');
   });
-  scoreViewButton2.on('click', function(){
+  scoreViewButton2.on('mousedown', function(){
     scoreViewButton1.setContent('img/scoreHead10.jpg');
     scoreViewButton2.setContent('img/scoreHead21.jpg');
     scoreViewButton3.setContent('img/scoreHead30.jpg');
   });
-  scoreViewButton3.on('click', function(){
+  scoreViewButton3.on('mousedown', function(){
     scoreViewButton1.setContent('img/scoreHead10.jpg');
     scoreViewButton2.setContent('img/scoreHead20.jpg');
     scoreViewButton3.setContent('img/scoreHead31.jpg');
   });
   
-  scoreViewButtonOk.on('click',function(){
+  scoreViewButtonOk.on('mousedown',function(){
     buttonOk();
   });
   
-  buttonOkSurface.on('click', function(){
+  buttonOkSurface.on('mousedown', function(){
     buttonOk();
   });
-  buttonScoreSurface.on('click', function(){
+  buttonScoreSurface.on('mousedown', function(){
     buttonScore();
   });
   
   // mouseClick
-  Engine.on('click', function(){
+  Engine.on('mousedown', function(){
     action();
   });
   
