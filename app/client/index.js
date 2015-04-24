@@ -38,6 +38,9 @@ var clickSurface;
 var clickSurfaceModifier;
 var currentView;
 
+var readySurface;
+var readySurfaceModifier;
+
 // Buttons
 var buttonOkSurface;
 var buttonOkSurfaceModifier;
@@ -298,7 +301,7 @@ function Lose(){
     createdAt: new Date()
   });
   scoresArray = Scores.find().fetch();
-  console.log(scoresArray);
+  //console.log(scoresArray);
   scoresRanking = Scores.find().fetch().sort(sortScores);
   
   for ( var i = 0; i < scoresRanking.length; i++ ){
@@ -528,6 +531,18 @@ Meteor.startup(function(){
     }
   });
   
+  readySurface = new ImageSurface({
+    content: 'img/ready.png'
+  });
+  
+  readySurfaceModifier = new Modifier({
+    size: [227,195],
+    origin: [0.5,0.5],
+    transform: function(){
+      return Transform.translate(320,290,10)
+    }
+  });
+  
   floorSurface = new ImageSurface({
     content: 'img/floor4.png',
     properties : {
@@ -568,24 +583,29 @@ Meteor.startup(function(){
   
   scoreViewButton1Modifier =     new StateModifier({
     size: [187,73],
-    transform:  Transform.translate(41,240,100)
+    //transform:  Transform.translate(41,240,100)
+    transform:  Transform.translate(41,168,100)
   });
   scoreViewButton2Modifier =     new StateModifier({
     size: [186,73],
-    transform:  Transform.translate(227,240,100)
+    //transform:  Transform.translate(227,240,100)
+    transform:  Transform.translate(227,168,100)
   });
   scoreViewButton3Modifier =     new StateModifier({
     size: [186,73],
-    transform:  Transform.translate(413,240,100)
+    //transform:  Transform.translate(413,240,100)
+    transform:  Transform.translate(413,168,100)
   });
   scoreViewSurfaceModifier =     new StateModifier({
     size: [558,407],
-    transform:  Transform.translate(41,313,100)
+    //transform:  Transform.translate(41,313,100)
+    transform:  Transform.translate(41,241,100)
   });
   scoreViewButtonOkModifier =    new StateModifier({
     size: [186,65],
     origin: [0.5,0],
-    transform:  Transform.translate(320,750,100)
+    //transform:  Transform.translate(320,750,100)
+    transform:  Transform.translate(320,678,100)
   });
   
   
@@ -613,8 +633,8 @@ Meteor.startup(function(){
   
   buttonScoreSurfaceModifier = new StateModifier({
     size: [188,65],
-    origin: [0.5,0.5],
-    transform:  Transform.translate(320,710,100)
+    origin: [0.5,0],
+    transform:  Transform.translate(320,678,100)
   });
   
   scoreSurface[0] = new ImageSurface({
@@ -662,9 +682,8 @@ Meteor.startup(function(){
     }
   });
   backgroundLeftModifier = new StateModifier({
-    size: [undefined,undefined],
-    origin: [1,0.5],
-    align: [0,0.5]
+    size: [undefined,1500],
+    origin: [1,0]
   });
   backgroundRightModifier = new Modifier({
     size: [undefined,1500],
@@ -682,8 +701,10 @@ Meteor.startup(function(){
   
   gameControllerModifier = new Modifier({
     size: [640,960],
+    align: [0.5,0],
+    origin: [0.5,0],
     transform: function(){
-      var scale = Math.min(window.innerWidth / 640,(window.innerHeight / 960)*0.95);
+      var scale = Math.min(window.innerWidth / 640,(window.innerHeight / 960)*1);
       return Transform.scale(scale,scale,1);
     }
   });
@@ -761,7 +782,7 @@ Meteor.startup(function(){
   gameView.add(scoreSurfaceModifier[2]).add(scoreSurface[2]);
   gameView.add(backgroundBotModifier).add(backgroundBot);
   gameView.add(backgroundRightModifier).add(backgroundRight);
-  //gameView.add(backgroundLeftModifier).add(backgroundLeft);
+  gameView.add(backgroundLeftModifier).add(backgroundLeft);
   //gameView.add(clickSurfaceModifier).add(clickSurface);
   
   // lostView setup
@@ -780,6 +801,7 @@ Meteor.startup(function(){
   }
   lostView.add(backgroundBotModifier).add(backgroundBot);
   lostView.add(backgroundRightModifier).add(backgroundRight);
+  lostView.add(backgroundLeftModifier).add(backgroundLeft);
   
   // scoreView setup
   scoreView = new View();
@@ -800,6 +822,7 @@ Meteor.startup(function(){
   scoreView.add(floorSurfaceModifier).add(floorSurface);
   scoreView.add(backgroundBotModifier).add(backgroundBot);
   scoreView.add(backgroundRightModifier).add(backgroundRight);
+  scoreView.add(backgroundLeftModifier).add(backgroundLeft);
   
   
   // startView setup
@@ -811,14 +834,17 @@ Meteor.startup(function(){
   //startView.add(scoreViewSurfaceModifier).add(scoreViewSurface);
   //startView.add(scoreViewButtonOkModifier).add(scoreViewButtonOk);
   
-  startView.add(buttonOkSurfaceModifier).add(buttonOkSurface);
+  //startView.add(buttonOkSurfaceModifier).add(buttonOkSurface);
   startView.add(buttonScoreSurfaceModifier).add(buttonScoreSurface);
+  
+  startView.add(readySurfaceModifier).add(readySurface);
   
   startView.add(birdSurfaceModifier).add(bird1SurfaceModifier).add(bird1Surface);
   startView.add(gameBackgroundSurface);
   startView.add(floorSurfaceModifier).add(floorSurface);
   startView.add(backgroundBotModifier).add(backgroundBot);
-  startView.add(backgroundRightModifier).add(backgroundRight);
+  scoreView.add(backgroundRightModifier).add(backgroundRight);
+  scoreView.add(backgroundLeftModifier).add(backgroundLeft);
   
   // mainContext setup
   mainContext = Engine.createContext();
