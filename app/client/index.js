@@ -489,7 +489,6 @@ Meteor.startup(function(){
   startSurface = new Surface({
     size: [640,960],
     properties: {
-      backgroundColor: 'green',
       zIndex: 1
     }
   });
@@ -498,7 +497,6 @@ Meteor.startup(function(){
     content: 'img/background5.png',
     size: [640,960],
     properties: {
-      backgroundColor: 'green',
       zIndex: 1
     }
   });
@@ -546,8 +544,7 @@ Meteor.startup(function(){
   floorSurface = new ImageSurface({
     content: 'img/floor4.png',
     properties : {
-      zIndex: 3,
-      backgroundColor: 'blue'
+      zIndex: 3
     }
   });
   
@@ -561,24 +558,19 @@ Meteor.startup(function(){
   // scoreView Surfaces and stuphph
   
   scoreViewButton1 =     new ImageSurface({
-    content: 'img/scoreHead11.jpg',
-    properties: {backgroundColor: 'grey'}
+    content: 'img/scoreHead11.jpg'
   });
   scoreViewButton2 =     new ImageSurface({
-    content: 'img/scoreHead20.jpg',
-    properties: {backgroundColor: 'yellow'}
+    content: 'img/scoreHead20.jpg'
   });
   scoreViewButton3 =     new ImageSurface({
-    content: 'img/scoreHead30.jpg',
-    properties: {backgroundColor: 'black'}
+    content: 'img/scoreHead30.jpg'
   });
   scoreViewSurface =     new ImageSurface({
-    content: 'img/scoreInfoBody.jpg',
-    properties: {backgroundColor: 'green'}
+    content: 'img/scoreInfoBody.jpg'
   });
   scoreViewButtonOk =    new ImageSurface({
-    content: 'img/btn_ok.png',
-    properties: {backgroundColor: 'red'}
+    content: 'img/btn_ok.png'
   });
   
   scoreViewButton1Modifier =     new StateModifier({
@@ -612,10 +604,7 @@ Meteor.startup(function(){
   // !scoreView
   
   buttonOkSurface = new ImageSurface({
-    content: 'img/btn_ok.png',
-    propeties: {
-      backgroundColor: 'brown'
-    }
+    content: 'img/btn_ok.png'
   });
   
   buttonOkSurfaceModifier = new StateModifier({
@@ -625,10 +614,7 @@ Meteor.startup(function(){
   });
   
   buttonScoreSurface = new ImageSurface({
-    content: 'img/btn_score.png',
-    propeties: {
-      backgroundColor: 'brown'
-    }
+    content: 'img/btn_score.png'
   });
   
   buttonScoreSurfaceModifier = new StateModifier({
