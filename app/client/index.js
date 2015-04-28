@@ -4,6 +4,8 @@ var MeteorSurface = require('library/meteor/core/Surface');
 var phase;
 var sinCoef = 0;
 
+var birdRotation;
+
 var mainContext;
 var qq;
 var aux = [0,0];
@@ -95,7 +97,8 @@ var gravityForce = [0,0.0056,0];
 var floorWall;
 var floorDistance = 800;
 var birdSurface;
-var birdSurfaceModifier;
+var birdPositionSurfaceModifier;
+var birdRotationSurfaceModifier;
 var birdSurfaceSize = [birdParticleRadius,birdParticleRadius];
 var birdParticleVelocityClick = [0,-0.9,0];
 var firstClick;
@@ -170,6 +173,7 @@ function buttonOk(){
       // Anem a start. Posar condicions inicialsi
       sinus=true;
       aux = [0,0];
+      birdRotation.set(0);
       scoreSurfaceModifier[0].setTransform(Transform.translate(320,50,100));
       scoreSurfaceModifier[1].setOpacity(0);
       scoreSurfaceModifier[2].setOpacity(0);
@@ -179,6 +183,7 @@ function buttonOk(){
       //console.log('>> start');
       gameController.show(startView);
       //phase = 'start';
+      birdAlive = 1;
       Timer.after(function(){phase ='start';},5);      
       break;
     case 'loseScore':
@@ -188,6 +193,7 @@ function buttonOk(){
       birdParticle.setVelocity([0,0,0]);
       setColPosition();
       aux = [0,0];
+      birdRotation.set(0);
       scoreSurfaceModifier[0].setTransform(Transform.translate(320,50,100));
       scoreSurfaceModifier[1].setOpacity(0);
       scoreSurfaceModifier[2].setOpacity(0);
@@ -198,6 +204,7 @@ function buttonOk(){
       gameController.show(startView);
       //phase = 'start';
       //transOut();
+      birdAlive = 1;
       sinusDisp.set(-50, {duration : 350, curve: Easing.outQuad}, function(){transIn();});
       Timer.after(function(){phase ='start';},5);
       break;
@@ -208,6 +215,7 @@ function buttonOk(){
       setColPosition();
       sinus = true;
       aux = [0,0];
+      birdRotation.set(0);
       scoreSurfaceModifier[0].setTransform(Transform.translate(320,50,100));
       scoreSurfaceModifier[1].setOpacity(0);
       scoreSurfaceModifier[2].setOpacity(0);
@@ -218,6 +226,7 @@ function buttonOk(){
       gameController.show(startView);
       //phase = 'start';
       //transOut();
+      birdAlive = 1;
       sinusDisp.set(-50, {duration : 350, curve: Easing.outQuad}, function(){transIn();});
       Timer.after(function(){phase ='start';},5);
       break;
@@ -233,6 +242,10 @@ function action(){
     case 'game':
       //flap
       //gravityId = physicsEngine.attach(gravity,birdParticle);
+      //birdRotationSurfaceModifier.setTransform(
+      //Transform.rotateZ(Date.now()));
+      birdRotation.set(-Math.PI/3);
+      birdRotation.set(Math.PI/3, {duration : 500, curve: Easing.inExpo});
       birdParticle.setVelocity(birdParticleVelocityClick);
       break;
   }
@@ -245,6 +258,7 @@ function startToGame(){
   //birdParticle.setPosition(birdParticleInitialPosition - [0,disp,0]);
   sinusDisp.halt();
   sinusDisp.set(0);
+  birdRotation.set(0);
   setColPosition();
   numCol = 0;
   //console.log('>> game');
@@ -254,6 +268,8 @@ function startToGame(){
   gameController.show(gameView);
   //gameOn = true;
   gravityId = physicsEngine.attach(gravity,birdParticle);
+      birdRotation.set(-Math.PI/3);
+      birdRotation.set(Math.PI/3, {duration : 500, curve: Easing.inExpo});
   birdParticle.setVelocity(birdParticleVelocityClick);
   // Callback
   callback();
@@ -290,8 +306,8 @@ function stopCols(){
 
 function sortScores(a,b){return b.score - a.score;}
 function Lose(){
-  birdParticle.setVelocity([0,-0.5,0]);
   //console.log('>> lose');
+  birdAlive = 0;
   phase = 'lose';
   Timer.clear(repeat);
   stopCols();
@@ -351,10 +367,39 @@ function buttonScore(){
   }
 }
 
+var count = 0;
+var birdImg = 1;
+var birdAlive = 1;
+
 function collisionFunction(){
-    
+  if (birdAlive){
+    if ( count == 15){
+      count = 0;
+      switch (birdImg){
+        case 1:
+          birdImg = 2;
+          birdSurface.setContent('img/birdie_2.png');
+          break;
+        case 2:
+          birdImg = 3;
+          birdSurface.setContent('img/birdie_3.png');
+          break;
+        case 3:
+          birdImg = 1;
+          birdSurface.setContent('img/birdie_1.png');
+          break;
+      }
+    }
+    count++;
+  }
+  
   if (phase == 'game'){
   
+    if (birdParticle.position.y > (960-heightFloor-birdParticleRadius)){
+      Lose();
+      birdParticle.setVelocity([0,-0.5,0]);
+    }
+    
     for (var i = 0; i < numCols; i++ ){
 
       // Per cada set de columnes
@@ -375,6 +420,7 @@ function collisionFunction(){
           //phase = 'lose';
           erasethis++;
           Lose();
+          birdParticle.setVelocity([0,-0.5,0]);
         }
       }
       else{
@@ -444,6 +490,7 @@ function setColPosition(){
 
 // Main
 Meteor.startup(function(){
+  birdRotation = new Transitionable(0);
   sinusDisp = new Transitionable(0);
   //transOut();
   sinusDisp.set(-50, {duration : 350, curve: Easing.outQuad}, function(){transIn();});
@@ -721,29 +768,29 @@ Meteor.startup(function(){
   floorWall = new Wall({ normal: [0,-1,0], distance: (960-heightFloor)});
   physicsEngine.attach(floorWall,birdParticle);
   
-  bird1Surface = new ImageSurface({
+  birdSurface = new ImageSurface({
     content: 'img/birdie_1.png'
   });
-  bird1SurfaceModifier = new Modifier({
+  birdSurfaceModifier = new Modifier({
     opacity: 1,
     transform: function(){
       return Transform.translate(0,sinusDisp.get(),0);
     }
   });  
-  bird2Surface = new ImageSurface({
-    content: 'img/birdie_2.png'
-  });
-  bird2SurfaceModifier = new StateModifier({
-    opacity: 0.01
-  });
-  bird3Surface = new ImageSurface({
-    content: 'img/birdie_3.png'
-  });
-  bird3SurfaceModifier = new StateModifier({
-    opacity: 0.01
-  });
   
-  birdSurfaceModifier = new Modifier({
+  birdRotationSurfaceModifier = new Modifier(
+    
+    {
+    size: [76,57],
+    origin: [0.5,0.5],
+      align: [0.5,0.5],
+    transform: function(){
+      return Transform.rotateZ(birdRotation.get());
+    }
+  }
+  );
+  
+  birdPositionSurfaceModifier = new Modifier({
     size: [76,57],
     origin: [0.5,0.5],
     transform: function(){
@@ -755,9 +802,7 @@ Meteor.startup(function(){
   gameView = new View();
   gameView.add(gameBackgroundSurface);
   gameView.add(floorSurfaceModifier).add(floorSurface);
-  //gameView.add(birdSurfaceModifier).add(bird3SurfaceModifier).add(bird3Surface);
-  //gameView.add(birdSurfaceModifier).add(bird2SurfaceModifier).add(bird2Surface);
-  gameView.add(birdSurfaceModifier).add(bird1SurfaceModifier).add(bird1Surface);
+  gameView.add(birdPositionSurfaceModifier).add(birdSurfaceModifier).add(birdRotationSurfaceModifier).add(birdSurface);
   for (var j = 0; j < numCols; j++){
     gameView.add(colTopSurfaceModifier[j]).add(colTopSurface[j]);
     gameView.add(colBotSurfaceModifier[j]).add(colBotSurface[j]);
@@ -780,7 +825,7 @@ Meteor.startup(function(){
   lostView.add(scoreSurfaceModifier[1]).add(scoreSurface[1]);
   lostView.add(scoreSurfaceModifier[2]).add(scoreSurface[2]);
   lostView.add(floorSurfaceModifier).add(floorSurface);
-  lostView.add(birdSurfaceModifier).add(bird1SurfaceModifier).add(bird1Surface);
+  lostView.add(birdPositionSurfaceModifier).add(birdSurfaceModifier).add(birdRotationSurfaceModifier).add(birdSurface);
   for (var j = 0; j < numCols; j++){
     lostView.add(colTopSurfaceModifier[j]).add(colTopSurface[j]);
     lostView.add(colBotSurfaceModifier[j]).add(colBotSurface[j]);
@@ -803,7 +848,7 @@ Meteor.startup(function(){
     scoreView.add(colBotSurfaceModifier[j]).add(colBotSurface[j]);
   }
   
-  scoreView.add(birdSurfaceModifier).add(bird1SurfaceModifier).add(bird1Surface);
+  scoreView.add(birdPositionSurfaceModifier).add(birdSurfaceModifier).add(birdRotationSurfaceModifier).add(birdSurface);
   scoreView.add(gameBackgroundSurface);
   scoreView.add(floorSurfaceModifier).add(floorSurface);
   scoreView.add(backgroundBotModifier).add(backgroundBot);
@@ -825,7 +870,7 @@ Meteor.startup(function(){
   
   startView.add(readySurfaceModifier).add(readySurface);
   
-  startView.add(birdSurfaceModifier).add(bird1SurfaceModifier).add(bird1Surface);
+  startView.add(birdPositionSurfaceModifier).add(birdSurfaceModifier).add(birdRotationSurfaceModifier).add(birdSurface);
   startView.add(gameBackgroundSurface);
   startView.add(floorSurfaceModifier).add(floorSurface);
   startView.add(backgroundBotModifier).add(backgroundBot);
